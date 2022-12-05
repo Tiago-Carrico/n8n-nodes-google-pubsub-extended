@@ -7,6 +7,8 @@ import {
 	ITriggerResponse,
 } from 'n8n-workflow';
 
+import { version } from '../version';
+
 export class GooglePubSubTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Google Pub/Sub Trigger',
@@ -14,7 +16,7 @@ export class GooglePubSubTrigger implements INodeType {
 		icon: 'file:googlePubSubTrigger.png',
 		group: ['trigger'],
 		version: 1,
-		description: 'Listens to Google Pub/Sub messages',
+		description: `Listens to Google Pub/Sub messages (v.${version})`,
 		defaults: {
 			name: 'Google Pub/Sub Trigger',
 			color: '#1A73E8',
@@ -25,7 +27,7 @@ export class GooglePubSubTrigger implements INodeType {
 			{
 				name: 'googleApi',
 				required: true,
-			}
+			},
 		],
 		properties: [
 			// Node properties which the user gets displayed and
@@ -81,7 +83,7 @@ export class GooglePubSubTrigger implements INodeType {
 			credentials: {
 				client_email: credentials.email as string,
 				private_key: credentials.privateKey as string,
-			}
+			},
 		});
 
 		const pubSubClient = new PubSub({ projectId, auth });

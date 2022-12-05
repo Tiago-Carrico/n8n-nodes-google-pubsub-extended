@@ -10,14 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/frankie567/n8n-google-pubsub-nodes.git"
+    "url": "git+https://github.com/digital-boss/n8n-nodes-google-pubsub.git"
   },
   "scripts": {
     "dev": "npm run watch",
-    "build": "tsc && gulp",
+    "build": "npm run version:gen && tsc && gulp",
     "tslint": "tslint -p tsconfig.json -c tslint.json",
     "watch": "tsc --watch",
-    "test": "jest"
+    "test": "jest",
+    "version:gen": "genversion -s -e src/version.ts && git add . ",
+    "version": "npm run build",
+    "postversion": "git push"
   },
   "files": [
     "dist"
@@ -27,6 +30,7 @@
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.2",
     "@types/request-promise-native": "^1.0.17",
+    "genversion": "^3.1.1",
     "gulp": "^4.0.0",
     "jest": "^26.4.2",
     "n8n-core": "^0.47.0",
