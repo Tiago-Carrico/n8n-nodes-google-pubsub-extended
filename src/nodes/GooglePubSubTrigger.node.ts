@@ -67,10 +67,16 @@ export class GooglePubSubTrigger implements INodeType {
 
 	async trigger(this: ITriggerFunctions): Promise<ITriggerResponse> {
 
-		const credentials = this.getCredentials('googleApi');
+		const credentials = await this.getCredentials('googleApi');
 		if (!credentials) {
 			throw new Error('Credentials are mandatory!');
 		}
+
+		const projectId = this.getNodeParameter('projectId') as string;
+		const topicName = this.getNodeParameter('topic') as string;
+		const subscriptionName = this.getNodeParameter('subscription') as string;
+		const decodeJSON = this.getNodeParameter('decodeJSON') as boolean;
+
 		const auth = new GoogleAuth({
 			credentials: {
 				client_email: credentials.email as string,
@@ -78,15 +84,15 @@ export class GooglePubSubTrigger implements INodeType {
 			}
 		});
 
-		const projectId = this.getNodeParameter('projectId') as string;
-		const topic = this.getNodeParameter('topic') as string;
-		const subscriptionName = this.getNodeParameter('subscription') as string;
-		const decodeJSON = this.getNodeParameter('decodeJSON') as boolean;
+		const pubSubClient = new PubSub({ projectId, auth });
 
-		const pubsub = new PubSub({ projectId, auth });
+		const topic = pubSubClient.topic(topicName);
+		if (!(await topic.exists())[0]) {
+			await topic.create();
+		}
 
-		const subscription = pubsub.topic(topic).subscription(subscriptionName);
-		if ((await subscription.exists())[0] === false) {
+		const subscription = topic.subscription(subscriptionName);
+		if (!(await subscription.exists())[0]) {
 			await subscription.create();
 		}
 
