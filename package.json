@@ -1,8 +1,8 @@
 {
-  "name": "n8n-nodes-google-pubsub",
+  "name": "@digital-boss/n8n-nodes-google-pubsub",
   "version": "0.3.2",
   "description": "Google Pub/Sub Nodes for n8n.",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "homepage": "https://n8n.io",
   "author": {
     "name": "François Voron",
