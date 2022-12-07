@@ -22,15 +22,9 @@
 	"baseUrl": ".",
   },
   "include": [
-	"credentials/**/*",
-	"src/**/*",
-	"nodes/**/*",
-	"nodes/**/*.json",
-	"credentials/translations/**/*.json",
-	"test/**/*"
+	"src/**/*.ts"
   ],
   "exclude": [
-	"**/*.spec.ts",
-	"nodes/*/descriptions/*"
+	"**/*.test.ts"
   ]
 }
