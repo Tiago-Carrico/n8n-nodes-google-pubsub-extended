@@ -13,7 +13,7 @@ export class GooglePubSubTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Google Pub/Sub Trigger',
 		name: 'googlePubSubTrigger',
-		icon: 'file:googlePubSubTrigger.png',
+		icon: 'file:googlePubSub.png',
 		group: ['trigger'],
 		version: 1,
 		description: `Listens to Google Pub/Sub messages (v.${version})`,
@@ -33,11 +33,11 @@ export class GooglePubSubTrigger implements INodeType {
 			// Node properties which the user gets displayed and
 			// can change on the node.
 			{
-				displayName: 'Project Id.',
+				displayName: 'Project ID',
 				name: 'projectId',
 				type: 'string',
 				default: '',
-				description: 'Google Cloud project id.',
+				description: 'Google Cloud project id',
 				required: true,
 			},
 			{
@@ -45,7 +45,7 @@ export class GooglePubSubTrigger implements INodeType {
 				name: 'topic',
 				type: 'string',
 				default: '',
-				description: 'Name of the Google Pub/Sub topic to listen to.',
+				description: 'Name of the Google Pub/Sub topic to listen to',
 				required: true,
 			},
 			{
@@ -61,7 +61,7 @@ export class GooglePubSubTrigger implements INodeType {
 				name: 'decodeJSON',
 				type: 'boolean',
 				default: false,
-				description: 'If your message data is in JSON, enable this option to decode it automatically.',
+				description: 'If your message data is in JSON, enable this option to decode it automatically',
 			},
 		],
 	};
