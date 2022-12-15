@@ -86,4 +86,17 @@ export const messagesFields: INodeProperties[] = [
 		default: true,
 		description: 'Whether to acknowledge the received messages',
 	},
+	{
+		displayName: 'Decode JSON',
+		name: 'decodeJSON',
+		displayOptions: {
+			show: {
+				resource: ['messages'],
+				operation: ['pull'],
+			},
+		},
+		type: 'boolean',
+		default: false,
+		description: 'If your message data is in JSON, enable this option to decode it automatically',
+	},
 ];

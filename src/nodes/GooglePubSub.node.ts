@@ -156,11 +156,12 @@ export class GooglePubSub implements INodeType {
 								// ----------------------------------------
 								// https://github.com/googleapis/nodejs-pubsub/blob/main/samples/synchronousPullWithLeaseManagement.js
 
-								const subClient = new SubscriberClient({ projectId, auth });
+								const subClient = new SubscriberClient({projectId, auth});
 								const subscriptionName = this.getNodeParameter('subscription', i) as string;
 								const maxMessages = this.getNodeParameter('maxMessages', i) as number;
 								const allowExcessMessages = this.getNodeParameter('allowExcessMessages', i) as boolean;
 								const acknowledgeMessages = this.getNodeParameter('acknowledgeMessages', i) as boolean;
+								const decodeJSON = this.getNodeParameter('decodeJSON', i) as boolean;
 
 								// The low level API client requires a name only.
 								const formattedSubscription =
@@ -174,19 +175,29 @@ export class GooglePubSub implements INodeType {
 									allowExcessMessages,
 								};
 
-								const [messages] = safeStringifyParse(
+								const [response] = safeStringifyParse(
 									await subClient.pull(request),
 								);
-								Object.assign(responseData, messages);
+								const receivedMessages = response.receivedMessages;
 
-								if (acknowledgeMessages && messages.receivedMessages.length > 0) {
+								// Decode the messages if decodeJSON selected
+								if (receivedMessages.length > 0 && decodeJSON) {
+									(receivedMessages as IReceivedMessage[]).forEach(item => {
+										// @ts-ignore
+										item.message.data = JSON.parse(Buffer.from(item.message.data).toString('utf-8'));
+									});
+								}
+								Object.assign(responseData, response);
+
+								// Acknoledge messages acknowledgeMessages is selected
+								if (acknowledgeMessages && receivedMessages.length > 0) {
 									// Acknowledge messages returned
 									// tslint:disable-next-line:forin
-									(messages as IReceivedMessage[]).forEach(message => {
+									(receivedMessages as IReceivedMessage[]).forEach(item => {
 										const ackRequest: IAcknowledgeRequest = {
 											subscription: formattedSubscription,
 											// @ts-ignore
-											ackIds: [message.ackId],
+											ackIds: [item.ackId],
 										};
 										subClient.acknowledge(ackRequest);
 									});
