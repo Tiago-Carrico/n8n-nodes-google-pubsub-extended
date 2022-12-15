@@ -57,6 +57,14 @@ export class GooglePubSubTrigger implements INodeType {
 				required: true,
 			},
 			{
+				displayName: 'Acknowledge Messages',
+				name: 'acknowledgeMessages',
+				required: true,
+				type: 'boolean',
+				default: true,
+				description: 'Whether to acknowledge the received messages',
+			},
+			{
 				displayName: 'Decode JSON',
 				name: 'decodeJSON',
 				type: 'boolean',
@@ -77,6 +85,7 @@ export class GooglePubSubTrigger implements INodeType {
 		const projectId = this.getNodeParameter('projectId') as string;
 		const topicName = this.getNodeParameter('topic') as string;
 		const subscriptionName = this.getNodeParameter('subscription') as string;
+		const acknowledgeMessages = this.getNodeParameter('acknowledgeMessages') as boolean;
 		const decodeJSON = this.getNodeParameter('decodeJSON') as boolean;
 
 		const auth = new GoogleAuth({
@@ -105,7 +114,9 @@ export class GooglePubSubTrigger implements INodeType {
 				data: decodeJSON ? JSON.parse(decodedData) : decodedData,
 				attributes: message.attributes,
 			}])]);
-			message.ack();
+			if (acknowledgeMessages) {
+				message.ack();
+			}
 		});
 
 		// The "closeFunction" function gets called by n8n whenever
