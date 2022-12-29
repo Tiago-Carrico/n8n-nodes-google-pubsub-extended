@@ -117,7 +117,7 @@ export class GooglePubSub implements INodeType {
 				switch (resource) {
 					case 'topicSubscriptions':
 						switch (operation) {
-							case 'list':
+							case 'list': {
 								// ----------------------------------------
 								//             topicSubscriptions: list
 								// ----------------------------------------
@@ -141,6 +141,7 @@ export class GooglePubSub implements INodeType {
 									Object.assign(responseData, subscriptions);
 								}
 								break;
+							}
 
 							default: {
 								throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for resource "${resource}"!`);
@@ -150,7 +151,7 @@ export class GooglePubSub implements INodeType {
 
 					case 'messages':
 						switch (operation) {
-							case 'pull':
+							case 'pull': {
 								// ----------------------------------------
 								//             messages: pull
 								// ----------------------------------------
@@ -203,6 +204,72 @@ export class GooglePubSub implements INodeType {
 									});
 								}
 								break;
+							}
+
+							case 'streamingPull': {
+								// ----------------------------------------
+								//             messages: streamingPull
+								// ----------------------------------------
+								// https://cloud.google.com/pubsub/docs/pull#streamingpull_and_high-level_client_library_code_samples
+
+								const projectId = this.getNodeParameter('projectId', i) as string;
+								const subscriptionName = this.getNodeParameter('subscription', i) as string;
+								const maxMessages = this.getNodeParameter('maxMessages', i) as number;
+								const timeout = this.getNodeParameter('timeout', i) as number;
+								const acknowledgeMessages = this.getNodeParameter('acknowledgeMessages', i) as boolean;
+								const decodeJSON = this.getNodeParameter('decodeJSON', i) as boolean;
+
+								const pubSubClient = new PubSub({projectId, auth});
+
+								// References an existing subscription
+								const subscription = pubSubClient.subscription(subscriptionName);
+
+								const receivedMessages: IDataObject[] = [];
+								let messageCount = 0;
+								await new Promise((resolve) => {
+									// Create an event handler to handle messages
+									// @ts-ignore
+									const messageHandler = message => {
+										// The message is a circular object (referencing itself). We take only the properties that are useful to us
+										const nonCircularMessage = {
+											id: message.id,
+											data: message.data,
+											attributes: message.attributes,
+											ackId: message.ackId,
+										};
+										if (decodeJSON) {
+											nonCircularMessage.data = JSON.parse(Buffer.from(nonCircularMessage.data).toString('utf-8'));
+										}
+										receivedMessages.push(nonCircularMessage);
+										messageCount += 1;
+
+										// Acknoledge message if acknowledgeMessages switch is set to true
+										if (acknowledgeMessages) {
+											message.ack();
+										}
+
+										// Stop the listener and resolve promise when the maxMessages are reached
+										if (messageCount === maxMessages) {
+											// console.log(`${messageCount} message(s) received. The maxMessages are reached.`);
+											subscription.removeListener(`message`, messageHandler);
+											resolve(true);
+										}
+									};
+
+									setTimeout(() => {
+										subscription.removeListener('message', messageHandler);
+										// console.log(`${messageCount} message(s) received. Timeout reached.`);
+										resolve(true);
+									}, timeout * 1000);
+
+									// Listen for new messages until timeout is hit
+									subscription.on('message', messageHandler);
+								});
+
+								responseData.receivedMessages = receivedMessages as IDataObject[];
+								responseData.count = messageCount;
+								break;
+							}
 
 							default: {
 								throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for resource "${resource}"!`);
