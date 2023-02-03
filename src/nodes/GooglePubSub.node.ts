@@ -271,6 +271,44 @@ export class GooglePubSub implements INodeType {
 								break;
 							}
 
+							case 'acknowledge': {
+								// ----------------------------------------
+								//             messages: acknowledge
+								// ----------------------------------------
+								// https://github.com/googleapis/nodejs-pubsub/blob/main/samples/synchronousPullWithDeliveryAttempts.js
+
+								const subscriptionName = this.getNodeParameter('subscription', i) as string;
+								const jsonAckIds = this.getNodeParameter('jsonAckIds', i) as boolean;
+
+								let ackIds;
+								if (jsonAckIds) {
+									ackIds = this.getNodeParameter('ackIds', i) as string[];
+								} else {
+									ackIds = this.getNodeParameter('ackIds', i) as IDataObject;
+									ackIds = (ackIds.metadataValues as IDataObject[]).map(a => a.id) as string[];
+								}
+
+								// Creates a client; cache this for further use.
+								const subClient = new SubscriberClient({projectId, auth});
+
+								// The low level API client requires a name only.
+								const formattedSubscription =
+									subscriptionName.indexOf('/') >= 0
+										? subscriptionName
+										: subClient.subscriptionPath(projectId, subscriptionName);
+
+								// Acknowledge all the messages. You could also acknowledge
+								// these individually, but this is more efficient.
+								const ackRequest: IAcknowledgeRequest = {
+									subscription: formattedSubscription,
+									ackIds,
+								};
+
+								await subClient.acknowledge(ackRequest);
+
+								break;
+							}
+
 							default: {
 								throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for resource "${resource}"!`);
 							}
@@ -280,6 +318,11 @@ export class GooglePubSub implements INodeType {
 					default: {
 						throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not supported!`);
 					}
+				}
+
+				// Always return data (part of n8n standards)
+				if (responseData.constructor === Object && Object.keys(responseData).length === 0) {
+					responseData.success = true;
 				}
 
 				// if (simplifyOutput) {

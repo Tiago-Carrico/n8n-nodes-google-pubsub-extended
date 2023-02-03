@@ -16,6 +16,10 @@ export const messagesOperations: INodeProperties[] = [
 		},
 		options: [
 			{
+				name: 'Acknowledge',
+				value: 'acknowledge',
+			},
+			{
 				name: 'Pull',
 				value: 'pull',
 			},
@@ -33,7 +37,6 @@ export const messagesFields: INodeProperties[] = [
 	/*-------------------------------------------------------------------------- */
 	/*                           	messages:pull		                         */
 	/* ------------------------------------------------------------------------- */
-
 	{
 		displayName: 'Subscription',
 		name: 'subscription',
@@ -103,7 +106,6 @@ export const messagesFields: INodeProperties[] = [
 		default: false,
 		description: 'If your message data is in JSON, enable this option to decode it automatically',
 	},
-
 
 	/*-------------------------------------------------------------------------- */
 	/*                           messages:streamingPull		                     */
@@ -177,6 +179,97 @@ export const messagesFields: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		description: 'If your message data is in JSON, enable this option to decode it automatically',
+	},
+
+	/*-------------------------------------------------------------------------- */
+	/*                           messages:acknowledge		                     */
+	/* ------------------------------------------------------------------------- */
+	{
+		displayName: 'Acknowledging a message whose ack deadline has expired may succeed, but such a message may be redelivered later. ' +
+			'Acknowledging a message more than once will not result in an error.',
+		name: 'jsonNotice',
+		type: 'notice',
+		displayOptions: {
+			show: {
+				resource: ['messages'],
+				operation: ['acknowledge'],
+			},
+		},
+		default: '',
+	},
+	{
+		displayName: 'Subscription',
+		name: 'subscription',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['messages'],
+				operation: ['acknowledge'],
+			},
+		},
+		type: 'string',
+		default: '',
+		description: 'Name of the Google Pub/Sub subscription',
+	},
+	{
+		displayName: 'Acknowledge IDs',
+		name: 'ackIds',
+		required: true,
+		type: 'fixedCollection',
+		default: '',
+		description: 'List with the acknowledge IDs to add',
+		typeOptions: {
+			multipleValues: true,
+		},
+		displayOptions: {
+			show: {
+				resource: ['messages'],
+				operation: ['acknowledge'],
+				jsonAckIds: [false],
+			},
+		},
+		options: [
+			{
+				name: 'metadataValues',
+				displayName: 'Metadata',
+				values: [
+					{
+						displayName: 'ID',
+						name: 'id',
+						type: 'string',
+						default: '',
+					},
+				],
+			},
+		],
+	},
+	{
+		displayName: 'Acknowledge IDs',
+		name: 'ackIds',
+		required: true,
+		type: 'json',
+		displayOptions: {
+			show: {
+				resource: ['messages'],
+				operation: ['acknowledge'],
+				jsonAckIds: [true],
+			},
+		},
+		default: '',
+		description: 'Array with the acknowledge IDs to add',
+	},
+	{
+		displayName: 'JSON Acknowledge IDs ',
+		name: 'jsonAckIds',
+		type: 'boolean',
+		displayOptions: {
+			show: {
+				resource: ['messages'],
+				operation: ['acknowledge'],
+			},
+		},
+		default: false,
+		description: 'Whether to add the ackIds by JSON or UI ',
 	},
 
 ];
