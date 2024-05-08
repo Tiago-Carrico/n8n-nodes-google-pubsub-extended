@@ -1,5 +1,5 @@
 {
-  "name": "@digital-boss/n8n-nodes-google-pubsub",
+  "name": "n8n-nodes-google-pubsub-extended",
   "version": "0.3.10",
   "description": "Google Pub/Sub Nodes for n8n.",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/digital-boss/n8n-nodes-google-pubsub.git"
+    "url": "git+https://github.com/Tiago-Carrico/n8n-nodes-google-pubsub-extended.git"
   },
   "scripts": {
     "dev": "npm run watch",
