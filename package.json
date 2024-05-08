@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-google-pubsub-extended",
+  "name": "n8n-nodes-google-pubsub-plus",
   "version": "0.3.10",
   "description": "Google Pub/Sub Nodes for n8n.",
   "license": "MIT",
