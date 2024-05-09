@@ -1,12 +1,12 @@
 {
   "name": "n8n-nodes-google-pubsub-extended",
-  "version": "0.3.10",
+  "version": "0.3.12",
   "description": "Google Pub/Sub Nodes for n8n.",
   "license": "MIT",
   "homepage": "https://n8n.io",
   "author": {
-    "name": "François Voron",
-    "email": "fvoron@gmail.com"
+    "name": "Tiago Carriço",
+    "email": "myhelithrowaway@gmail.com"
   },
   "repository": {
     "type": "git",

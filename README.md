@@ -1,3 +1,5 @@
+# CURRENTLY NOT WORKING
+
 # n8n-nodes-google-pubsub
 
 This package provides nodes for [`n8n`](https://github.com/n8n-io/n8n) to work with [Google Pub/Sub](https://cloud.google.com/pubsub/docs).
